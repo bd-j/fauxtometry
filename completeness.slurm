@@ -10,6 +10,8 @@
 #SBATCH --mail-type=END,FAIL
 #SBATCH --mail-user=benjamin.johnson@cfa.harvard.edu
 
+date; pwd; hostname
+
 module purge
 module load python/3.10.9-fasrc01
 mamba activate faux
@@ -26,4 +28,5 @@ echo ${pid}/${ver}
 
 ./completeness.sh
 
-
+echo "done"
+date
