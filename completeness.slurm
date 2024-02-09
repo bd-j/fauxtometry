@@ -14,12 +14,13 @@ module purge
 module load python/3.10.9-fasrc01
 mamba activate faux
 
-export base=
-export pid=
-export ver=
+export WEBBPSF_PATH=$PWD/webbpsf-data
+export base=/n/holystore01/LABS/conroy_lab/Lab/BlueJay/nircam-data/
+export pid=jw011800
+export ver=v0.7
 
 printf -v runid "%02d" $SLURM_ARRAY_TASK_ID
-export tag=ast-$runid
+export tag=ast-${runid}
 
 
 ./completeness.sh
