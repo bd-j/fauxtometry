@@ -341,12 +341,13 @@ if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument("--image_names", type=str, nargs="+",
                         default=["../image/jw018100/v0.7_mosaic/mosaic_F115W.fits"])
-    parser.add_argument("--output_dir", type=str, default="./")
+    parser.add_argument("--mock_dir", type=str, default="./")
+    parser.add_argument("--tag", type=str, default="ast-00")
     parser.add_argument("--n_fake", type=int, default=1000)
     parser.add_argument("--display", type=int, default=0)
     args = parser.parse_args()
 
     test(plot=args.display)
     multiband_injection(args.image_names, args.tag, n_fake=args.n_fake,
-                        outdir=args.output_dir)
+                        outdir=args.mock_dir)
 

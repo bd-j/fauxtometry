@@ -1,6 +1,6 @@
 # for each realization
 
-tag=ast-01
+echo tag=$tag
 
 image_dir=${base}/${pid}/${ver}_mosaic
 mock_dir=${base}/${pid}/${ver}_mock

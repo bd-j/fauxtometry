@@ -6,7 +6,7 @@
 #SBATCH --ntasks-per-node=1
 #SBATCH --mem-per-cpu=12GB
 #SBATCH --time=6:00:00
-#SBATCH --output=./completeness.log
+#SBATCH --output=./completeness_%a.log
 #SBATCH --mail-type=END,FAIL
 #SBATCH --mail-user=benjamin.johnson@cfa.harvard.edu
 
@@ -21,7 +21,8 @@ export ver=v0.7
 
 printf -v runid "%02d" $SLURM_ARRAY_TASK_ID
 export tag=ast-${runid}
-
+echo $tag
+echo ${pid}/${ver}
 
 ./completeness.sh
 
