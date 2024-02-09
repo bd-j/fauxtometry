@@ -82,7 +82,7 @@ def multiband_injection(imnames, tag, outdir=None,
         image.close()
 
 
-def simulate_image(cat, hdr, psf, n_side):
+def simulate_image(cat, hdr, psf, n_side, beep=100):
     '''
     Generate image with galfit.
     '''
@@ -93,6 +93,8 @@ def simulate_image(cat, hdr, psf, n_side):
     gsp = galsim.GSParams(maximum_fft_size=10240)
 
     for i, row in enumerate(cat):
+        if np.mod(i, beep) == 0:
+            print(f"on star {i} of {len(cat)}")
         xfull, yfull = row["x"], row["y"]
         flux = row[band]
         gimage = galsim.ImageF(n_side, n_side, scale=pixel_scale)

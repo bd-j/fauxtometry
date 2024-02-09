@@ -171,6 +171,7 @@ if __name__ == "__main__":
     segname = image_name.replace(".fits", "_seg.fits")
     detname = image_name.replace(".fits", "_det.fits")
 
+    print(f"detecting on {image_names[0]} and {image_names[1]}")
     for i in range(int(np.ceil(im_size[1]/size_cut))):
         for j in range(int(np.ceil(im_size[0]/size_cut))):
             print(i, j)
@@ -265,6 +266,7 @@ if __name__ == "__main__":
     fits.writeto(segname, full_seg, overwrite=True)
 
     for image_name in image_names:
+        print(f"photometering {image_name}")
         im = SepImage(image_name)
         subtract_background(im)
         catname = image_name.replace(".fits", "_phot.fits")
