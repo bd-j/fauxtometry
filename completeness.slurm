@@ -16,7 +16,7 @@ mamba activate faux
 
 export WEBBPSF_PATH=$PWD/webbpsf-data
 export base=/n/holystore01/LABS/conroy_lab/Lab/BlueJay/nircam-data/
-export pid=jw011800
+export pid=jw018100
 export ver=v0.7
 
 printf -v runid "%02d" $SLURM_ARRAY_TASK_ID
