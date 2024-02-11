@@ -275,7 +275,7 @@ if __name__ == "__main__":
         hdul = fits.HDUList([fits.PrimaryHDU(),
                              fits.BinTableHDU(photometry)])
         for hdu in hdul:
-            for i, ap in apers:
+            for i, ap in enumerate(apers):
                 hdu.header[f"AP{i}PIXR"] = ap
         hdul.writeto(catname, overwrite=True)
 
