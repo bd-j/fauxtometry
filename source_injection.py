@@ -68,7 +68,7 @@ def multiband_injection(imnames, tag, outdir=None,
     image.close()
 
     for imn in imnames:
-        outn = imn.replace(".fits", f"_{tag}.fits")
+        outn = imn.replace(".fits", f"{tag}.fits")
         if outdir:
             outn = os.path.join(outdir, os.path.basename(outn))
         image, hdr, conv = read_im(imn)

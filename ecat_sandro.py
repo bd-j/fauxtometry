@@ -32,7 +32,7 @@ class SepImage:
         data = fits.getdata(imn, "SCI")
         err = fits.getdata(imn, "ERR")
         #err.byteswap(inplace=True).newbyteorder()
-        print(xslice, yslice)
+        #print(xslice, yslice)
 
         hdr = fits.getheader(imn, 1)
         data = data[yslice, xslice]
@@ -174,7 +174,7 @@ if __name__ == "__main__":
     print(f"detecting on {image_names[0]} and {image_names[1]}")
     for i in range(int(np.ceil(im_size[1]/size_cut))):
         for j in range(int(np.ceil(im_size[0]/size_cut))):
-            print(i, j)
+            #print(i, j)
             x_slice = slice(i*size_cut, np.min([(i+1)*size_cut, im_size[1]]))
             y_slice = slice(j*size_cut, np.min([(j+1)*size_cut, im_size[0]]))
             im = SepImage(image_names[0], xslice=x_slice, yslice=y_slice)
@@ -203,6 +203,7 @@ if __name__ == "__main__":
                 full_seg[y_slice, x_slice] += seg
                 detected.append(det)
             except:
+                print(i, j)
                 try:
                     print("increase threshold for extraction: 3!")
                     sp.thresh = 3.0
@@ -262,7 +263,7 @@ if __name__ == "__main__":
                                     pass
     detected = np.concatenate(detected)
 
-    # fits.writeto(detname, detected, overwrite=True)
+    fits.writeto(detname, detected, overwrite=True)
     fits.writeto(segname, full_seg, overwrite=True)
 
     for image_name in image_names:
@@ -271,7 +272,12 @@ if __name__ == "__main__":
         subtract_background(im)
         catname = image_name.replace(".fits", "_phot.fits")
         photometry = sphotometer(detected, im, apers)
-        fits.writeto(catname, photometry, overwrite=True)
+        hdul = fits.HDUList([fits.PrimaryHDU(),
+                             fits.BinTableHDU(photometry)])
+        for hdu in hdul:
+            for i, ap in apers:
+                hdu.header[f"AP{i}PIXR"] = ap
+        hdul.writeto(catname, overwrite=True)
 
 
 

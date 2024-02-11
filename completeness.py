@@ -84,10 +84,13 @@ def completeness_catalog(mock, det, threshold=1.5):
     Xi = np.array([det["x"], det["y"]]).T
 
     X, dX, rinds, iinds = crossmatch(Xr, Xi, threshold=threshold)
+
+    # make matched catalogs with same rows as mock
     detected, dist = np.zeros(len(mock), dtype=int), np.zeros([len(mock), 2])
     detected[rinds] = 1
     dist[rinds, :] = dX
-    recovered = mock[iinds]
+    recovered = np.zeros(len(mock), dtype=det.dtype)
+    recovered[rinds] = det[iinds]
 
     # Filter matches based on other criteria?
     # leave that to further pos processing....
@@ -109,7 +112,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     mock_name = f"{args.mock_dir}/mosaic_{args.band.upper()}{args.tag}.fits"
-    det_name = mock_name.replace(".fits", "_det.fits")
+    det_name = mock_name.replace(".fits", "_phot.fits")
     comp_name = mock_name.replace(".fits", "_completeness.fits")
 
     mock = fits.getdata(mock_name, "MOCKCAT")
