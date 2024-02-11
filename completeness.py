@@ -96,9 +96,9 @@ def completeness_catalog(mock, det, threshold=1.5):
     # leave that to further pos processing....
 
     dummy = np.zeros(len(mock))
-    complete = append_fields(mock, ["detected", "match_dist"],
+    complete = append_fields(mock, ["detected", "match_distance"],
                              [detected, dummy], dtypes=[int, (float, (2,))], usemask=False)
-    complete["dist"] = dist
+    complete["match_distance"] = dist
 
     return complete, recovered
 
