@@ -264,7 +264,7 @@ if __name__ == "__main__":
     detected = np.concatenate(detected)
 
     fits.writeto(detname, detected, overwrite=True)
-    fits.writeto(segname, full_seg, overwrite=True)
+    #fits.writeto(segname, full_seg, overwrite=True)
 
     for image_name in image_names:
         print(f"photometering {image_name}")
