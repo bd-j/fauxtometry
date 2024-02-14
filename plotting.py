@@ -31,12 +31,41 @@ class catWCS:
         return x / self.pixel_size, y / self.pixel_size
 
 
+def bandmerge(hdus, bands=["F150W", 'F200W', "F444W"], n_ap=4):
+    """Combine row-matched aperture photometry catalogs.
+    """
+
+    # --- format output ---
+    coln = ["ra", "dec", "x", "y", "a", "b"]
+    fluxn = [f"{b}_aper{i}" for b in bands for i in range(n_ap)]
+    errn = [f"{c}_e" for c in fluxn]
+    cols = [("id", int)] + [(c, float) for c in coln + fluxn + errn]
+    dtype = np.dtype(cols)
+
+    # create output and fill with common parameters
+    cat = hdus[f"DET_{bands[0].upper()}"].data
+    out = np.zeros(len(cat), dtype=dtype)
+    out["id"] = np.arange(len(cat))
+    for c in coln:
+        out[c] = cat[c]
+
+    # fill the aperture fluxes
+    for b in bands:
+        catn = f"DET_{b.upper()}"
+        cat = hdus[catn]
+        for i in range(n_ap):
+            out[f"{b}_aper{i}"] = cat[f"aper{i}"]
+            out[f"{b}_aper{i}_e"] = cat[f"aper{i}_err"]
+
+    return out
+
+
 def collect(catnames):
     mcats, rcats = [], []
     for catn in catnames:
         with fits.open(catn) as hdul:
             mcat = hdul["INPUT"].data
-            rcat = hdul["MEASURED"].data
+            rcat = bandmerge(hdul)
             mcats.append(mcat)
             rcats.append(rcat)
     mcat = np.concatenate(mcats)
@@ -56,9 +85,9 @@ if __name__ == "__main__":
     ca = wcs.sky_to_scene(ark_ra, ark_dec)
     radius = np.hypot(*(cp - ca).T)
 
-    refband = "F200W"
+    refband, iaper = "F200W", 1
     inmags = -2.5*np.log10(mcat[refband]/3631e9)
-
+    outmags = -2.5 * np.log10(rcat[f"{refband}_aper{iaper}"]/3631e9)
 
     mbins = np.arange(28.0, 31.1, 0.1)
     rbins = np.array([2.9, 3.7, 4.8, 6.1, 7.8, 10])
@@ -129,8 +158,6 @@ if __name__ == "__main__":
     fig.savefig(f"{results}/bluej_completness_vs_F200W.png")
 
     # magnitude offsets
-    iaper = 1
-    outmags = -2.5 * np.log10(rcat[f"aper{iaper}"]/3631e9)
     delta = (outmags - inmags)
     sel = (np.isfinite(outmags)) & (mcat["detected"] > 0) & (radius > (2 * 60))
     fig, ax = pl.subplots(figsize=(8, 5.8))

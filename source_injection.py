@@ -38,6 +38,7 @@ class Config:
     colors["F200W"] = dict(mean=0, sigma=0.05)
     colors["F150W"] =  dict(mean=-0.25, sigma=0.25)
     colors["F115W"] =  dict(mean=-0.5, sigma=0.25)
+    colors["F444W"] =  dict(mean=1.5, sigma=0.5)
 
     mag_faint = 31.0
     mag_bright = 28.0

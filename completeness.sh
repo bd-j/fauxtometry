@@ -9,7 +9,7 @@ echo mock_dir=$mock_dir
 
 # generate fake images in detection bands
 echo "injecting fake sources"
-python source_injection.py --image_names $image_dir/mosaic_F200W.fits $image_dir/mosaic_F150W.fits \
+python source_injection.py --image_names $image_dir/mosaic_F200W.fits $image_dir/mosaic_F150W.fits $image_dir/mosaic_F444W.fits \
                            --n_fake 6400 \
                            --tag $tag \
                            --mock_dir $mock_dir

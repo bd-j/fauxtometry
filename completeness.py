@@ -79,7 +79,8 @@ def crossmatch(Xr, Xi, threshold=4):
     return Xr[ref_ind], dX, ref_ind, im_ind
 
 
-def completeness_catalog(mock, det, threshold=1.5):
+def completeness_catalog(mock, dets, threshold=1.5):
+    det = list(det.values())[0]
     Xr = np.array([mock["x"], mock["y"]]).T
     Xi = np.array([det["x"], det["y"]]).T
 
@@ -89,8 +90,11 @@ def completeness_catalog(mock, det, threshold=1.5):
     detected, dist = np.zeros(len(mock), dtype=int), np.zeros([len(mock), 2])
     detected[rinds] = 1
     dist[rinds, :] = dX
-    recovered = np.zeros(len(mock), dtype=det.dtype)
-    recovered[rinds] = det[iinds]
+    recovered = {}
+    for band, det in dets.items():
+        rec = np.zeros(len(mock), dtype=det.dtype)
+        rec[rinds] = det[iinds]
+        recovered[band] = rec
 
     # Filter matches based on other criteria?
     # leave that to further pos processing....
@@ -114,19 +118,24 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     mock_name = f"{args.mock_dir}/mosaic_{args.band.upper()}{args.tag}.fits"
-    det_name = mock_name.replace(".fits", "_phot.fits")
     comp_name = mock_name.replace(".fits", "_completeness.fits")
 
+
     mock = fits.getdata(mock_name, "MOCKCAT")
-    det = fits.getdata(det_name)
+    det = {}
+    for band in args.phot_bands:
+        phot_name =f"{args.mock_dir}/mosaic_{band.upper()}{args.tag}_phot.fits"
+        det[band.upper()] = fits.getdata(phot_name)
 
     cat, props = completeness_catalog(mock, det)
 
+    bcats = [fits.BinTableHDU(det, name=f"DET_{band.upper()}")
+             for band, det in props.items()]
+
     hdul = fits.HDUList([fits.PrimaryHDU(),
-                         fits.BinTableHDU(cat, name="INPUT"),
-                         fits.BinTableHDU(props, name="MEASURED")])
+                         fits.BinTableHDU(cat, name="INPUT")] + bcats)
     for hdu in hdul:
         hdu.header["MOCKN"] = mock_name
-        hdu.header["DETN"] = det_name
-    hdul["MEASURED"].header["FILTER"] = args.band
+        #hdu.header["DETN"] = det_name
+        #hdul["MEASURED"].header["FILTER"] = args.band
     hdul.writeto(comp_name, overwrite=True)
