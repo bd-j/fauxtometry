@@ -46,7 +46,8 @@ def collect(catnames):
 
 if __name__ == "__main__":
 
-    cats = glob.glob("results/bluej/*completeness.fits")
+    cats = glob.glob("catalogs/bluej/*completeness.fits")
+    results = "results"
     mcat, rcat = collect(cats)
     wcs = catWCS(mcat)
     cp = np.array(wcs.sky_to_scene(mcat["ra"], mcat["dec"])).T
@@ -96,10 +97,10 @@ if __name__ == "__main__":
     ax.set_ylabel("detected fraction")
     ax.legend()
     ax.set_xscale("log")
-    fig.savefig("bluej_completness_vs_radius.png")
+    fig.savefig(f"{results}/bluej_completness_vs_radius.png")
 
     sbm = (sbins[:-1] + sbins[1:]) / 2.
-    with open("bluej_completness_vs_radius.dat", "w") as fout:
+    with open(f"{results}/bluej_completness_vs_radius.dat", "w") as fout:
         magbins = " ".join([f"f200w={mm:.2f}" for mm in sbm])
         fout.write(f"outer radius(')  {magbins} \n")
         for i, rbin in enumerate(rbins[1:]):
@@ -125,7 +126,7 @@ if __name__ == "__main__":
     ax.plot(xm, comp, "-o")
     ax.set_xlabel(xname)
     ax.set_ylabel("detected fraction")
-    fig.savefig("bluej_completness_vs_F200W.png")
+    fig.savefig(f"{results}/bluej_completness_vs_F200W.png")
 
     # magnitude offsets
     iaper = 1
@@ -151,10 +152,10 @@ if __name__ == "__main__":
 
     ax.set_ylim(0.11, 0.9)
 
-    fig.savefig("delta_F200W.png")
+    fig.savefig(f"{results}/delta_F200W.png")
 
     # text table
-    with open("bluej_completness_vs_F200W.dat", "w") as fout:
+    with open(f"{results}/bluej_completness_vs_F200W.dat", "w") as fout:
         fout.write("total_f200w  completeness  dm50 dm16 dm84\n")
         for i, m in enumerate(xm):
             fout.write(f"{m:.1f} {comp[i]:.3f} {pct[i, 0]:.3f} {pct[i, 1]:.3f} {pct[i, 2]:.3f}\n")
