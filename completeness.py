@@ -80,6 +80,11 @@ def crossmatch(Xr, Xi, threshold=4):
 
 
 def completeness_catalog(mock, dets, threshold=1.5):
+    """Row-match a set of photometry catalogs to the input mock catalog.
+
+    The photometry catalogs are assumed to be row-matched to each other already.
+    Photometry and mock catalogs must both have the 'x' and 'y' columns
+    """
     det = list(det.values())[0]
     Xr = np.array([mock["x"], mock["y"]]).T
     Xi = np.array([det["x"], det["y"]]).T
@@ -112,25 +117,30 @@ if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument("--mock_dir", type=str, default="/n/holystore01/LABS/conroy_lab/Lab/BlueJay/image/jw018100/v0.7_mosaic/")
     parser.add_argument("--tag", type=str, default="")
-    parser.add_argument("--band", type=str, default=["F200W", "F150W", "F115W", "F090W", "F277W", "F356W", "F444W"])
+    parser.add_argument("--bands", type=str, nargs="*", default=["F200W", "F150W", "F444W"])
     parser.add_argument("--threshold", type=float, default=2.0,
                         help="match distance threshold in pixels")
     args = parser.parse_args()
 
-    mock_name = f"{args.mock_dir}/mosaic_{args.band.upper()}{args.tag}.fits"
-    comp_name = mock_name.replace(".fits", "_completeness.fits")
+    # output name
+    comp_name = f"{args.mock_dir}/mosaic{args.tag}_completeness.fits"
 
-
+    # read the input catalog from the artifical image
+    mock_name = f"{args.mock_dir}/mosaic_{args.bands[0].upper()}{args.tag}.fits"
     mock = fits.getdata(mock_name, "MOCKCAT")
+
+    # read the detection and the photometry in all bands
     det = {}
-    for band in args.phot_bands:
+    for band in args.bands:
         phot_name =f"{args.mock_dir}/mosaic_{band.upper()}{args.tag}_phot.fits"
         det[band.upper()] = fits.getdata(phot_name)
 
+    # create detection catalogs row-matched to the input catalog
+    # also adds a 'detected' and 'match_distance' column to the input catalog.
     cat, props = completeness_catalog(mock, det)
 
     bcats = [fits.BinTableHDU(det, name=f"DET_{band.upper()}")
-             for band, det in props.items()]
+             for args.bands, det in props.items()]
 
     hdul = fits.HDUList([fits.PrimaryHDU(),
                          fits.BinTableHDU(cat, name="INPUT")] + bcats)

@@ -85,16 +85,23 @@ if __name__ == "__main__":
     ca = wcs.sky_to_scene(ark_ra, ark_dec)
     radius = np.hypot(*(cp - ca).T)
 
+    # --- mags input and output ---
     refband, iaper = "F200W", 1
     inmags = -2.5*np.log10(mcat[refband]/3631e9)
     outmags = -2.5 * np.log10(rcat[f"{refband}_aper{iaper}"]/3631e9)
 
+    # --- color cut ---
+    color = -2.5 * np.log10((rcat[f"F200W_aper1"]*1.55) / ( rcat[f"F444W_aper1"]*3.3))
+
+    # --- selection ---
+    weight = mcat["detected"] & (color < -1) & np.isfinite(color)
+
+    # --- define mag and radius bins ---
     mbins = np.arange(28.0, 31.1, 0.1)
     rbins = np.array([2.9, 3.7, 4.8, 6.1, 7.8, 10])
     rbins = 10**np.arange(np.log10(0.4), 1.05, 0.1)
 
-    # plot vs radius in bins of mag
-
+    # --- plot vs radius in bins of mag ---
     pl.close("all")
     pl.ion()
     pl.rcParams["font.size"] = 16
@@ -107,13 +114,12 @@ if __name__ == "__main__":
     ctable = np.zeros([N, len(rbins)-1])
 
     pl.rcParams["axes.prop_cycle"] = pl.cycler("color", pl.cm.viridis(np.linspace(0,1,N)))
-
     fig, ax = pl.subplots()
     for i, sbin in enumerate(sbins[:-1]):
         sel = (ss > sbins[i]) & (ss < sbins[i+1])
         print(sel.sum())
         x = xx[sel]
-        w = mcat[sel]["detected"]
+        w = weight[sel]
         hin, _ = np.histogram(x, bins=xbins)
         hout, _ = np.histogram(x,  weights=w, bins=xbins)
         comp = (hout/hin)
@@ -138,15 +144,16 @@ if __name__ == "__main__":
 
     if False:
         h2in, _, _ = np.histogram2d(radius, inmags, bins=[rbins, mbins])
-        h2out, _, _ = np.histogram2d(radius, inmags, weights=mcat["detected"],
+        h2out, _, _ = np.histogram2d(radius, inmags, weights=weight,
                                  bins=[rbins, mbins])
 
     # --- F200W ----
+
     #total completeness
     xx, xbins, xname = inmags, mbins, "F200W"
     sel = radius/60. > 1.5
     x = xx[sel]
-    w = (mcat[sel]["detected"])
+    w = weight[sel]
     hin, _ = np.histogram(x, bins=xbins)
     hout, _ = np.histogram(x,  weights=w, bins=xbins)
     comp = (hout/hin)
@@ -154,7 +161,8 @@ if __name__ == "__main__":
     fig, ax = pl.subplots()
     ax.plot(xm, comp, "-o")
     ax.set_xlabel(xname)
-    ax.set_ylabel("detected fraction")
+    ax.set_ylabel("selected fraction (detection + color)")
+    ax.set_title("d_ark > 1.5 arcmin")
     fig.savefig(f"{results}/bluej_completness_vs_F200W.png")
 
     # magnitude offsets
