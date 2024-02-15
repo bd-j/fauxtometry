@@ -6,7 +6,7 @@
 #SBATCH --ntasks-per-node=1
 #SBATCH --mem-per-cpu=12GB
 #SBATCH --time=6:00:00
-#SBATCH --output=./completeness_%a.log
+#SBATCH --output=./logs/completeness_%a.log
 #SBATCH --mail-type=END,FAIL
 #SBATCH --mail-user=benjamin.johnson@cfa.harvard.edu
 
