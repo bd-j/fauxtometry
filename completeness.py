@@ -85,7 +85,7 @@ def completeness_catalog(mock, dets, threshold=1.5):
     The photometry catalogs are assumed to be row-matched to each other already.
     Photometry and mock catalogs must both have the 'x' and 'y' columns
     """
-    det = list(det.values())[0]
+    det = list(dets.values())[0]
     Xr = np.array([mock["x"], mock["y"]]).T
     Xi = np.array([det["x"], det["y"]]).T
 
@@ -130,14 +130,14 @@ if __name__ == "__main__":
     mock = fits.getdata(mock_name, "MOCKCAT")
 
     # read the detection and the photometry in all bands
-    det = {}
+    dets = {}
     for band in args.bands:
         phot_name =f"{args.mock_dir}/mosaic_{band.upper()}{args.tag}_phot.fits"
-        det[band.upper()] = fits.getdata(phot_name)
+        dets[band.upper()] = fits.getdata(phot_name)
 
     # create detection catalogs row-matched to the input catalog
     # also adds a 'detected' and 'match_distance' column to the input catalog.
-    cat, props = completeness_catalog(mock, det)
+    cat, props = completeness_catalog(mock, dets)
 
     bcats = [fits.BinTableHDU(det, name=f"DET_{band.upper()}")
              for args.bands, det in props.items()]
