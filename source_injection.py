@@ -190,7 +190,7 @@ def make_webbpsf_image(hdr, oversamp=4,
     nwave = dict(M=9, W=21)
 
     import webbpsf
-    det.replace("LONG", "5")
+    det = det.replace("LONG", "5") #omg
     nrc = webbpsf.NIRCam()
     nrc.detector = det
 
