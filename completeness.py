@@ -140,7 +140,7 @@ if __name__ == "__main__":
     cat, props = completeness_catalog(mock, dets)
 
     bcats = [fits.BinTableHDU(det, name=f"DET_{band.upper()}")
-             for args.bands, det in props.items()]
+             for band, det in props.items()]
 
     hdul = fits.HDUList([fits.PrimaryHDU(),
                          fits.BinTableHDU(cat, name="INPUT")] + bcats)

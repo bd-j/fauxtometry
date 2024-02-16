@@ -91,6 +91,7 @@ if __name__ == "__main__":
     outmags = -2.5 * np.log10(rcat[f"{refband}_aper{iaper}"]/3631e9)
 
     # --- color cut ---
+    # color including aperture corrections.
     color = -2.5 * np.log10((rcat[f"F200W_aper1"]*1.55) / ( rcat[f"F444W_aper1"]*3.3))
 
     # --- selection ---
