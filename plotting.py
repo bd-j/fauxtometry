@@ -52,7 +52,7 @@ def bandmerge(hdus, bands=["F150W", 'F200W', "F444W"], n_ap=4):
     # fill the aperture fluxes
     for b in bands:
         catn = f"DET_{b.upper()}"
-        cat = hdus[catn]
+        cat = hdus[catn].data
         for i in range(n_ap):
             out[f"{b}_aper{i}"] = cat[f"aper{i}"]
             out[f"{b}_aper{i}_e"] = cat[f"aper{i}_err"]
@@ -92,10 +92,11 @@ if __name__ == "__main__":
 
     # --- color cut ---
     # color including aperture corrections.
+    incolor = -2.5*np.log10(mcat["F200W"]/mcat["F444W"])
     color = -2.5 * np.log10((rcat[f"F200W_aper1"]*1.55) / ( rcat[f"F444W_aper1"]*3.3))
 
     # --- selection ---
-    weight = mcat["detected"] & (color < -1) & np.isfinite(color)
+    weight = mcat["detected"] & np.isfinite(color) & (incolor < -1.4) & (incolor > -1.6)
 
     # --- define mag and radius bins ---
     mbins = np.arange(28.0, 31.1, 0.1)

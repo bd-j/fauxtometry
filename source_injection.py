@@ -35,10 +35,10 @@ class Config:
         side length of the area to simulate for each source, pixels.
     """
     colors = {}
-    colors["F200W"] = dict(mean=0, sigma=0.05)
-    colors["F150W"] =  dict(mean=-0.25, sigma=0.25)
-    colors["F115W"] =  dict(mean=-0.5, sigma=0.25)
-    colors["F444W"] =  dict(mean=1.5, sigma=0.5)
+    colors["F200W"] = dict(mean=0, sigma=0.01)
+    colors["F150W"] =  dict(mean=-0.25, sigma=0.05)
+    colors["F115W"] =  dict(mean=-0.5, sigma=0.1)
+    colors["F444W"] =  dict(mean=1.5, sigma=0.1)
 
     mag_faint = 31.0
     mag_bright = 28.0
