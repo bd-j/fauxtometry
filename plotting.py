@@ -105,7 +105,7 @@ if __name__ == "__main__":
             )
 
     # --- define mag and radius bins ---
-    mbins = np.arange(28.0, 31.1, 0.1)
+    mbins = np.arange(27.0, 31.1, 0.1)
     rbins = np.array([2.9, 3.7, 4.8, 6.1, 7.8, 10])
     rbins = 10**np.arange(np.log10(0.4), 1.05, 0.1)
 
@@ -116,7 +116,7 @@ if __name__ == "__main__":
     pl.rcParams["lines.linewidth"] = 2.5
 
     xx, xbins, xname = radius/60., rbins, "radius (')"
-    ss, sbins, sname = inmags, np.arange(28, 32, 0.5), "F200W"
+    ss, sbins, sname = inmags, np.arange(28, 31, 0.5), "F200W"
 
     N = len(sbins) - 1
     ctable = np.zeros([N, len(rbins)-1])
@@ -137,8 +137,8 @@ if __name__ == "__main__":
         etable[i] = err
         xm = (xbins[:-1] + xbins[1:]) / 2
         print(sbin, comp[-9:].min(), comp[-9:].max())
-        ax.errorbar(xm, comp, yerr=err, color="grey", linestyle="", marker="")
-        ax.plot(xm, comp, "-o", label=f"{sbins[i]:.1f} < {sname} < {sbins[i+1]:.1f}")
+        ax.errorbar(xm, comp/comp[4], yerr=err/comp[4], color="grey", linestyle="", marker="")
+        ax.plot(xm, comp/comp[4], "-o", label=f"{sbins[i]:.1f} < {sname} < {sbins[i+1]:.1f}")
 
     ax.set_xlabel(xname)
     ax.set_ylabel("detected fraction")
@@ -210,5 +210,11 @@ if __name__ == "__main__":
         fout.write("#total_f200w  completeness completeness_unc dm50 dm16 dm84\n")
         for i, m in enumerate(xm):
             fout.write(f"{m:.1f} {comp[i]:.3f} {err[i]:.4f} {pct[i, 0]:.3f} {pct[i, 1]:.3f} {pct[i, 2]:.3f}\n")
+
+
+    hdul = fits.HDUList([fits.PrimaryHDU(),
+                         fits.BinTableHDU(mcat, name="INPUT"),
+                         fits.BinTableHDU(rcat, name="OUTPUT")])
+    hdul.writeto(f"{results}/completeness_all.fits", overwrite=True)
 
 #    ax.imshow(h2out/h2in, extents)

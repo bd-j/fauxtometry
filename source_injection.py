@@ -58,11 +58,13 @@ class Config:
 # --- SIMULATE ---
 
 def multiband_injection(imnames, tag, outdir=None,
-                        n_fake=1000, bright=28, faint=31):
+                        n_fake=1000, bright=None, faint=None):
     config = Config()
     config.n_fake = n_fake
-    config.mag_bright = bright
-    config.mag_faint = faint
+    if bright:
+        config.mag_bright = bright
+    if faint:
+        config.mag_faint = faint
 
     image, hdr, conv = read_im(imnames[0])
     cat = fake_pointsource_catalog(image, config.n_fake, config)
