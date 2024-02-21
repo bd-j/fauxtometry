@@ -41,7 +41,7 @@ class Config:
     colors["F444W"] =  dict(mean=1.5, sigma=0.1)
 
     mag_faint = 31.0
-    mag_bright = 28.0
+    mag_bright = 27.0
 
     npix_per_object = 64
 
