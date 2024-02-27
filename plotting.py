@@ -132,7 +132,7 @@ if __name__ == "__main__":
         hin, _ = np.histogram(x, bins=xbins)
         hout, _ = np.histogram(x,  weights=w, bins=xbins)
         comp = (hout/hin)
-        err = np.sqrt(comp / hin * (1 + comp))
+        err = np.sqrt(comp / hin * (1 - comp))
         ctable[i] = comp
         etable[i] = err
         xm = (xbins[:-1] + xbins[1:]) / 2
@@ -170,7 +170,7 @@ if __name__ == "__main__":
     hin, _ = np.histogram(x, bins=xbins)
     hout, _ = np.histogram(x,  weights=w, bins=xbins)
     comp = (hout/hin)
-    err = np.sqrt(comp / hin * (1 + comp))
+    err = np.sqrt(comp / hin * (1 - comp))  # asymptotic estimate of sqrt(var)
     xm = (xbins[:-1] + xbins[1:]) / 2
     cfig, ax = pl.subplots()
     ax.errorbar(xm, comp, yerr=err, color="grey", linestyle="", marker="")
@@ -185,7 +185,7 @@ if __name__ == "__main__":
     sel = (np.isfinite(outmags)) & (mcat["detected"] > 0) & (radius > (2 * 60))
     dfig, ax = pl.subplots(figsize=(8, 5.8))
     cb = ax.hexbin(inmags[sel], delta[sel],
-                   extent=(28.0, mbins.max(), 0.11, 0.9), gridsize=[40, 20])
+                   extent=(mbins.min(), mbins.max(), 0.11, 0.9), gridsize=[40, 20])
     ax.set_xlabel(f"{sname} TOTAL_input (mag)")
     ax.set_ylabel(f"APER{iaper} - TOTAL_input (mag)")
 
