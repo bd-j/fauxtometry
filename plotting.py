@@ -98,10 +98,11 @@ if __name__ == "__main__":
 
     # --- selection ---
     weight = (mcat["detected"]
+              #& (rcat[f"{refband}_aper2"] / rcat[f"{refband}_aper2_e"] > 5)
               & np.isfinite(color)
               & ((-2.5 * np.log10(rcat[f"F200W_aper1"]*1.55/3631e9)) < 30)
               & (cmd_color < -0.00) & (cmd_color > -0.5)
-              #& (color < -1)
+              & (color < -1)
             )
 
     # --- define mag and radius bins ---
@@ -116,7 +117,7 @@ if __name__ == "__main__":
     pl.rcParams["lines.linewidth"] = 2.5
 
     xx, xbins, xname = radius/60., rbins, "radius (')"
-    ss, sbins, sname = inmags, np.arange(28, 31, 0.5), "F200W"
+    ss, sbins, sname = inmags, np.arange(28, 31, 0.5), refband
 
     N = len(sbins) - 1
     ctable = np.zeros([N, len(rbins)-1])
@@ -148,7 +149,7 @@ if __name__ == "__main__":
 
     sbm = (sbins[:-1] + sbins[1:]) / 2.
     with open(f"{results}/bluej_completness_vs_radius.dat", "w") as fout:
-        magbins = " ".join([f"f200w={mm:.2f}" for mm in sbm])
+        magbins = " ".join([f"{refband}={mm:.2f}" for mm in sbm])
         fout.write(f"outer radius(')  {magbins} \n")
         for i, rbin in enumerate(rbins[1:]):
             cc = " ".join([f"{c:.3f} {e:.4f}" for c, e in zip(ctable[:, i], etable[:,i])])
@@ -163,7 +164,7 @@ if __name__ == "__main__":
     min_dist_ark = 2.0
 
     #total completeness
-    xx, xbins, xname = inmags, mbins, "F200W"
+    xx, xbins, xname = inmags, mbins, refband
     sel = radius/60. > min_dist_ark
     x = xx[sel]
     w = weight[sel]
@@ -202,12 +203,12 @@ if __name__ == "__main__":
 
     ax.set_ylim(0.11, 0.9)
 
-    dfig.savefig(f"{results}/delta_F200W.png")
+    dfig.savefig(f"{results}/delta_{refband}.png")
 
     # text table
-    with open(f"{results}/bluej_completness_vs_F200W.dat", "w") as fout:
+    with open(f"{results}/bluej_completness_vs_{refband}.dat", "w") as fout:
         fout.write(f"# dist_ark > {min_dist_ark} arcmin\n")
-        fout.write("#total_f200w  completeness completeness_unc dm50 dm16 dm84\n")
+        fout.write(f"#total_{refband}  completeness completeness_unc dm50 dm16 dm84\n")
         for i, m in enumerate(xm):
             fout.write(f"{m:.1f} {comp[i]:.3f} {err[i]:.4f} {pct[i, 0]:.3f} {pct[i, 1]:.3f} {pct[i, 2]:.3f}\n")
 

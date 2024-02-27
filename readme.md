@@ -1,5 +1,8 @@
 # fauxtometry
 
+Source injection into JWST images for completeness and recovery calculations.
+Currently limited to point sources and the WebbPSF PSF model.
+
 ## requirements
 
 numpy
