@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+"""Adapted from B Johnson's easycat.py by Sandro Tacchella
+"""
+
 import numpy as np
 from numpy.lib.recfunctions import append_fields
 from argparse import ArgumentParser
@@ -11,7 +14,6 @@ from astropy.wcs import WCS
 import sep
 
 
-# This should match the defaults in detection.py
 class SEPParameters:
     def __init__(self, thresh=3.0, deblend_cont=0.0001, minarea=3, filter_type='matched',
                  deblend_nthresh=32, clean=True, clean_param=1.0):

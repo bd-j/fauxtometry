@@ -15,9 +15,9 @@ python source_injection.py --image_names $image_dir/mosaic_F200W.fits $image_dir
                            --mock_dir $mock_dir
 # run detection
 echo "detecting sources in fake images"
-python ecat_sandro.py --mosaic_dir $mock_dir \
-                      --tag $tag \
-                      --bands F200W F150W F444W
+python ecat.py --mosaic_dir $mock_dir \
+               --tag $tag \
+               --bands F200W F150W F444W
 
 # compare input and output, constructing completeness catalog
     # 1 = detected
